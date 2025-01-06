@@ -1,0 +1,92 @@
+---
+title: Transformers
+---
+Let's create a transformer trained with shakespear work:
+
+## Get training text
+```{python}
+#| echo: true
+#| output: true
+with open('input.txt', 'r', encoding='utf-8') as f:
+    text = f.read()
+
+# get used chars
+chars = sorted(list(set(text)))
+vocab_size = len(chars)
+
+print("characters used by shakespear: "+''.join(chars))
+print("this corresponds to: "+str(vocab_size)+" characters")
+```
+
+## Tokenize
+
+
+Here will tokenize by character, tiktoken (used by GPT) uses a subword tokenizer instead of char making gpt2 having a vocabulary size of 50257 possibilities
+
+```{python}
+#| echo: true
+#| output: true
+stoi = { ch:i for i,ch in enumerate(chars) } # map char to its position in chars
+itos = { i:ch for i,ch in enumerate(chars) } # do the oposite
+
+encode = lambda s: [stoi[c] for c in s] # encoder: lambda function to encode chars in a string
+decode = lambda l: ''.join([itos[i] for i in l]) # decoder: lambda function to decode values in a list
+
+test_text="hello world"
+encoded=encode(test_text)
+print(encoded)
+print(decode(encoded))
+```
+
+Now we can tokenize shakespeare:
+(we use torch to wrap our tokenized data so the calculation afterwards could run faster - allowing us to use both CPU and GPU)
+
+```{python}
+#| echo: true
+#| output: true
+import torch # we use PyTorch: https://pytorch.org
+data = torch.tensor(encode(text), dtype=torch.long)
+print(data.shape, data.dtype)
+print(data[:100])
+```
+
+to train a model we need training data and validation data. For our case we can take 90% of the dataset as training data and the remaining as validation data
+
+```{python}
+#| echo: true
+#| output: true
+n = int(0.9*len(data)) # first 90% will be train, rest val
+train_data = data[:n]
+val_data = data[n:]
+```
+
+When training the transformer we dont treat the whole text at the same time (that would take too much computing power and actually be impossible). Common defaults are 128, 256, 512, or 1024 tokens but we'll use 8 for the example so it doesn't take too much resources. 
+
+For vectors like (18,47,56,57,58,1,15,47,58), this will train the tranformer that after 18 likely comes a 47, after 18,47 likely comes a 56 after 18,47,56 likely comes 57 and so on..
+
+```{python}
+#| echo: true
+#| output: true
+
+block_size = 8
+train_data[:block_size+1]
+
+x = train_data[:block_size]
+y = train_data[1:block_size+1]
+for t in range(block_size):
+    context = x[:t+1]
+    target = y[t]
+    print(f"when input is {context} the target: {target}")
+```
+
+continue tuto at 18:26
+
+# References
+
+Followed tutorial
+https://www.youtube.com/watch?v=kCc8FmEb1nY&t=848s&ab_channel=AndrejKarpathy
+https://colab.research.google.com/drive/1JMLa53HDuA-i7ZBmqV7ZnA3c_fvtXnx-?usp=sharing#scrollTo=h5hjCcLDr2WC
+
+other sources
+https://github.com/karpathy/nanoGPT
+https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt
