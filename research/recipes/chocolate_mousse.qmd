@@ -1,0 +1,26 @@
+---
+title: Chocolate mousse
+toc: true
+categories: 
+  - sweet
+description: Chocolate mousse
+image: images/chocolate_mousse.jpeg
+---
+## Ingredients
+
+- *(250/3)*g butter
+- 200g dark chocolate
+- 6 Tsp sugar
+- 6 eggs
+- 1 tsp soluble coffee
+
+## Preparation
+
+1. Start melting the butter and chocolate together
+2. Seperate whites and yolks
+3. Beat the whites until stiff and put them aside
+4. Beat the yolks with the sugar and coffee
+5. Make sure the chocolate and butter are melted and stired together
+6. Add the chocolate mixture to the yolk mixture and mix
+7. Carefully mix the stiffened egg whites
+8. Store in the fridge

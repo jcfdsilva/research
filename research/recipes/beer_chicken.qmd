@@ -1,0 +1,24 @@
+---
+title: Beer chicken
+toc: true
+categories: 
+    - savory
+description: Beer chicken
+image: images/beer_chicken.png
+---
+## Ingredients
+
+- Olive oil
+- ½ medium onion
+- 2 cloves of garlic
+- 1 smalll chicken
+- 1 beer (33cl)
+- 2 Tsp of "sopa de rabo de boi"
+
+## Preparation
+
+1. Cut onions and garlic
+2. Fry them in a cacerolle with olive oil
+3. Add the knorr and let the chicken fry a bit
+4. Add the beer and let it cook for around 30min or until the chicken is tender
+5. At the same time you can make rice or mashed potatoes

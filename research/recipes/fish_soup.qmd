@@ -1,0 +1,31 @@
+---
+title: Fish soup
+toc: true
+categories: 
+    - savory
+description: Fish soup
+image: images/fish_soup.png
+---
+## Ingredients
+
+- 250g of white fish
+- 2 onions
+- 4 medium potatoes
+- 1 carrot
+- 1 peeled tomato
+- 2dl olive oil
+- 1 laurel leaf
+- parsley
+- 2 cloves of garlic
+- salt & pepper
+
+## Preparation
+
+1. In a cacerolle put the fish, 1 onion cut in half,garlic, laurel, parsley, salt, pepper, half of the olive oil and cover with water.
+2. Bring it to a boil and let cook for a  while
+3. In a 2nd cacerolle put the potatoes, tomato, carrot, 2nd onion, the rest of the olive oil, salt and cover withh water to boil.
+4. Take the fish out of the first cacerolle and shred it
+5. Strain the water used to cook the fish and save it
+6. Blend the content of the second cacerolle and mix in water from cooking the fish
+7. Add the fish and add salt and peper to taste if needed
+8. Add coriander to taste

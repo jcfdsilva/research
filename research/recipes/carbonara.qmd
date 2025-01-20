@@ -1,0 +1,28 @@
+---
+title: Carbonara
+toc: true
+categories: 
+    - savory
+description: Real carbonara
+image: images/carbonara.jpeg
+---
+## Ingredients
+
+- 100 g pasta*
+- 80g of bacon or Guancial/Pancetta
+- 1 large egg
+- 15g pecorino (or parmigiano)
+- salt and black pepper
+
+\* *(can be gluten free pasta)*
+
+## Preparation
+
+1. Cook the pasta
+2. While the pasta cooks, mix the yolks and cheese
+3. On medium heat, fry the bacon unitl crispy
+4. When cooked, mix the pasta in the frying pan with the bacon
+5. Add a bit of the pasta water unitl it simmers
+6. Add salt and pepper
+7. Add the cheese and egg mixture with the heat off until it melts.
+8. You can adjust with more water to abtain a creamy pasta

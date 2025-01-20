@@ -1,0 +1,16 @@
+---
+title: Sweet potato gnocci
+toc: true
+categories: 
+    - savory
+    - TODO
+description: Sweet potato gnocci
+image: images/sweet_potato_gnocci.jpeg
+---
+## Ingredients
+
+- dsf
+
+## Preparation
+
+1. sdf

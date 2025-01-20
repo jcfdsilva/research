@@ -1,0 +1,27 @@
+---
+title: Raspberry Licor
+toc: true
+categories: 
+    - drink
+description: Enough for around a 33cl bottle
+image: images/rasberry_licor.png
+---
+## Ingredients
+
+- 250g raspberries
+- 250ml Cachaça
+- 250g sugar
+- 250ml water
+
+## Preparation
+
+1. Wash the raspberies
+2. Mix the raspberries and cachaça and let macerate for at least 30 days, while mixing on average once a day
+3. Remove the raspberries and save as much liquid as possible
+4. Mix the sugar and water in a pan in high heat
+5. When it starts to simmer, lower the temperature and let it thicken for around 15min
+6. When thickened (but is not caramel) take it out of the heat and let it cool until ~40 degrees C
+    - If to hot it will evaporate the alcohol, if too cold it will be hard to mix
+7. Mix the sugar mixture and the alchool
+8. Leave it again for 30 days and mix on average onc a day
+9. Adjust with more cachaça or sugar for personal taste

@@ -1,0 +1,25 @@
+---
+title: Caldo verde
+toc: true
+categories: 
+    - savory
+description: Caldo verde
+image: images/caldo_verde.jpeg
+---
+## Ingredients
+
+- 150g potatoes
+- 1 garlic clove 
+- 50-70g couve
+- 1 onion
+- olive oil
+- salt
+- chouriço
+
+## Preperation
+
+1. Boil everything except the cabbage
+2. After boiled, remove some water but save it
+3. also Remove the choriço
+4. Blend everything and then add the cabbage and choriço
+5. Add some water if needed

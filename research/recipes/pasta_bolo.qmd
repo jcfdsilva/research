@@ -1,0 +1,44 @@
+---
+title: Pasta bolognese
+toc: true
+categories: 
+    - savory
+description: Pasta bolognese
+image: images/pasta_bolo.png
+---
+## Ingredients
+
+**Tomato paste**
+- 4 tomatoes
+- 1 onion
+- 1 garlic clove
+- olive oil
+- pinch of sugar
+- red wine
+- oregano
+- salt & pepper
+
+**Bolognese sauce:**
+- 250g minced meat
+- red wine
+- 100g pasta
+- parmegiano
+- 1/2 carrot
+
+
+## Preparation
+
+**Tomato paste**
+1. Fry minced onion and garlic in olive oil -> put half of the fried onions and garlic in a pan for the meat
+2. Add tomatoes, red wine, oreganos, sugar, salt & pepper
+3. Let cook until tomatoes are softened
+4. Blend everything together (you may remove tomato peel before blending)
+
+**Blognese sauce**
+1. Add the meat and carrot to the previously added onion and garlic
+2. Fry the meat until water has evaporated and all the meat has turned brown
+3. Add tomato paste and red wine (half and half to cover meat)
+4. Let it cook on medium heat for at least 1h until meat is soft
+5. During this time cook the pasta al dente
+6. Mix the pasta, meat and cheese together
+
