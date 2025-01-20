@@ -1,0 +1,19 @@
+---
+title: "3D Dice"
+page-layout: full
+image: ../../resources/images/plane.png
+description: "3d launch the dice with threeJS and cannonJS"
+---
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+<script src="dice/positions.js"></script>
+<script src="dice/scene.js"></script>
+<script src="dice/main.js"></script>
+
+<style>
+    canvas{
+        position: absolute;
+        top: 0;
+    }
+</style>
