@@ -1,5 +1,9 @@
 ---
 title: Transformers
+image: ../../resources/images/transformer.png
+categories:
+ - AI
+ - AI dev
 ---
 Let's create a transformer trained with shakespear work:
 
@@ -7,7 +11,7 @@ Let's create a transformer trained with shakespear work:
 ```{python}
 #| echo: true
 #| output: true
-with open('input.txt', 'r', encoding='utf-8') as f:
+with open('../../resources/data/input.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
 # get used chars

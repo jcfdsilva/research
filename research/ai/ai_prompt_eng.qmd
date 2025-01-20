@@ -1,0 +1,136 @@
+---
+title: Prompt engineering
+description: Documentation about the research done on Prompt engineering for agents.
+date: '2025-01-13'
+toc: true
+categories:
+ - AI
+ - AI integration
+format:
+  html:
+    code-fold: true
+image: ../../resources/images/prompteng.webp
+---
+
+For the agents architecture, each agent needs to understand the context of the initial prompt in order to answer or forward the prompt to the correct agent. The simplest option would be to integrate conditional tests that would respond to certain keywords but user inputs are somehow unpredictable so this option would not be effective.
+
+To use AI to make these decisions we could use specific NLPs for the task or the general-purposeless of an LLM itself. For the sake of this software, we used the same LLMs used to answer the questions, but some prompt engineering was needed.
+
+## Prompts for decider agents:
+
+Decider agents use prompt engineering to retrieve answers in a specific json format that will then be parsed to retrieve information and to send data to the final user.
+To ensure the LLM answers correctly, we need some prompt engineering to make sure the json is in a correct format and has relevant data.
+
+### Action_needs
+
+Actions_needs expects a json answer in a specific format. For this, the prompt needs to include the explanation of how the json is constructed and what it should include:
+
+:::prompt
+ PROMPT:How many R's are in raspberry?
+
+ INSTRUCTION: Based on the prompt and the descriptions of the actions available, analyse which actions are most relevant for finding information. Provide a response in JSON format where the root attribute is actions and contains an array of objects. Each object must have a name attribute specifying the action, one called parameters containing string parameters separated by a comma, and a reason attribute explaining its selection.
+
+ ACTIONS: [{'name': 'count_string', 'instruction': 'counts char occurrence in string, requires parameters to be the string and the char', 'type': 'action'}, {'name': 'get_date_time', 'instruction': 'Gets the CET time right now', 'type': 'action'}, {'name': 'get_temperature', 'instruction': 'Gets the average temperature for Switzerland right now', 'type': 'action'}, {'name': 'call_coolprop', 'instruction': 'calls coolprop with 2 parameters called value1 and value2 in an online services', 'type': 'action'}]
+:::
+
+ **Expected answer:**
+
+    ```json
+    {
+        "actions": [
+            {
+            "name": "count_string",
+            "parameters": "raspberry,r",
+            "reason": "The action counts character occurrences in a string, which directly addresses the prompt about the number of 'R's in 'raspberry'."
+            }
+        ]
+    }
+    ```
+
+### Search_needs
+
+Like actions_needs, search_needs expects a json answer in a specific format. For this, the prompt needs to include the explanation of how the json is constructed and what it should include:
+
+:::prompt
+ PROMPT:what is IPESE?
+
+ INSTRUCTION: Based on the prompt and the descriptions of the collections available, analyse which collections are most relevant for finding information. Provide a response in JSON format where the root attribute is search_needs and contains an array of objects. Each object must have a name attribute specifying the collection and a reason attribute explaining its selection. If no additional data is required, return an empty search_needs array
+ 
+ COLLECTIONS: [{'name': 'Advanced_Energetics_Assistant', 'description': 'Advanced learning assistant for the "Advanced Energetics" course at EPFL, using provided lecture notes and slides.'}, {'name': 'ZIBAC', 'description': 'Zibac dataset folder for ipesegpt.'}, {'name': 'main', 'description': 'Collection of data with all sourced papers and information for IPESE. This contains a large set of data for industrial processes and energy systems engineering'}, {'name': 'Energy_Conversion_and_Renewable_Energy_Assistant', 'description': 'Advanced learning assistant for the "Energy Conversion and Renewable Energy" course at EPFL, using provided lecture notes and slides.'}, {'name': 'Rosmose', 'description': 'Advanced learning assistant for the "Rosmose" software at EPFL, using provided documentation.'}, {'name': 'maestro', 'description': ''}]
+:::
+
+ **Expected answer:**
+
+    ```json
+    {
+        "search_needs": [
+            {
+            "name": "main",
+            "reason": "This collection contains a comprehensive set of data on industrial processes and energy systems engineering, which aligns with the likely focus of IPESE."
+            },
+            {
+            "name": "ZIBAC",
+            "reason": "This collection is specifically associated with IPESE, as indicated by its mention of 'ipesegpt.'"
+            }
+        ]
+    }
+    ```
+
+### Patch_needs
+
+Finally the prompt for patch_needs expects a json answer also in a specific format containing data relevant for our system. For that we use the following prompt:
+
+:::prompt
+PROMPT:who is Mickael Jackson?
+
+INSTRUCTION: Based on the prompt and the descriptions of the patches available, analyse which patches are most relevant for finding information. These patches will contain information about a specific subject that will be added to a prompt for the LLM. Provide a response in JSON format where the root attribute is patches and contains an array of objects. Each object must have a name attribute specifying the patch name and a reason attribute explaining its selection.
+
+PATCHES: [{'name': 'test_patch', 'instruction': 'Patch with more information about Michael Jackson', 'type': 'patch'}]
+:::
+
+ **Expected answer:**
+
+    ```json
+    {
+        "patches": [
+            {
+            "name": "test_patch",
+            "reason": "This patch contains more information about Michael Jackson, making it relevant for answering the question."
+            }
+        ]
+    }
+
+    ```
+
+## Patch agents
+
+Some patch agents are always used like in our process and their content is part of the prompt engineering used to get expected results.
+
+ - **final_preprompt**: used to structure the final answer of the LLM telling it to answer the question based on the retrieved information.
+
+:::prompt
+Based on the extracted parts of a long document, provide a direct and concise answer to the final question. After the answer, include a section titled ‘SOURCES’ with references to the documents from which the information was retrieved. Do not include any additional questions or comments—only the final answer and the sources.
+:::
+
+ - **artifact_management**: used to structure the artifact on the final answer, if an artifact (= code chunk or text document) is needed, separating everything into specific sections.
+
+:::prompt
+1. In the ANSWER section, provide a concise summary of the response. If the response involves generating an artifact (e.g., code, text, or email), mention this explicitly in the answer.
+2. In the ARTIFACT section, include only the requested artifact (e.g., the actual text, code, or email). Do not include any commentary or explanations.
+3. In the SOURCES section, list the references to the documents from which the information was retrieved.
+Strictly adhere to the following order and structure:
+1. ANSWER
+2. ARTIFACT (if applicable, otherwise leave empty)
+3. SOURCES
+Do not mix content between sections, and ensure the content is placed in the correct section based on its role.
+:::
+
+## Descriptions of patches, actions and collections
+
+As seen before the descriptions of the data collections, the patches available and the actions integrated are important for the decider agents as they are integrated in the list sent to the LLM. 
+
+ - The collection descriptions need to state the type of data that can be found (think about writing descriptions with keywords that could be used to link a prompt to this collection)
+
+ - The patches are a granular way of doing some prompt engineering, you can add text to the final prompt if your patch is chosen to take part on the answering process. For that, respect the same rules as in the data collection descriptions.
+
+  - The action patches should contain information about what they do and parameters they might need, these parameters would always be strings as that’s the format used by LLMs but it can be casted to other types using python in your integrated 

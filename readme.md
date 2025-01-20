@@ -1,1 +1,0 @@
-install quarto and pip install requirements

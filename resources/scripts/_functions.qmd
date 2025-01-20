@@ -1,0 +1,271 @@
+```{python}
+#| eval: false
+#| code-summary: "Define functions"
+
+import hashlib
+import time
+import uuid
+import qdrant_client
+from qdrant_client.http.models import Distance, VectorParams
+import numpy as np
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+import pdfplumber
+from openai import OpenAI
+import requests
+import json
+from glob import glob
+import os
+import tiktoken
+from transformers import AutoTokenizer
+
+# Extract text from a PDF
+def extract_text_from_pdf(pdf_path):
+    text = ""
+    with pdfplumber.open(pdf_path) as pdf:
+        for page in pdf.pages:
+            text += page.extract_text()
+    return text
+
+# Chunk text into manageable sizes
+def chunk_text(text, chunk_size=250):
+    words = text.split()
+    return [' '.join(words[i:i+chunk_size]) for i in range(0, len(words), chunk_size)]
+
+# Generate embeddings using OpenAI API
+def generate_embeddings(chunks, model_name, api_key):
+    # Initialize the OpenAI client
+    client = OpenAI(api_key=api_key)
+
+    embeddings = []
+    for chunk in chunks:
+        try:
+            response = client.embeddings.create(
+                input=chunk,
+                model=model_name
+            )
+            embeddings.append(response.data[0].embedding)
+        except Exception as e:
+            print(f"Error generating embedding: {e}")
+            embeddings.append(None)
+    return embeddings
+
+# Generate embeddings using Infomaniak API
+def generate_embeddings_v2(chunks, product_id, model_name, api_token, chunk_count=0,rate=None):
+    url = f"https://api.infomaniak.com/1/ai/{product_id}/openai/v1/embeddings"
+    headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/json"}
+    embeddings = []
+    for chunk in chunks:
+        if rate is not None and chunk_count == rate:
+            print("waiting one minute")
+            time.sleep(60)  # Wait for one minute
+            chunk_count = 0  # Reset the counter after waiting
+        try:
+            data = json.dumps({"input": [chunk], "model": model_name})
+            response = requests.post(url, headers=headers, data=data)
+            if response.status_code == 200:
+                res_json = response.json()
+                embeddings.append(res_json["data"][0]["embedding"])
+            else:
+                print(f"Error: {response.status_code} - {response.text}")
+                embeddings.append(None)
+        except Exception as e:
+            print(f"Error generating embedding: {e}")
+            embeddings.append(None)
+        chunk_count += 1
+    return chunk_count, embeddings
+
+# Store embeddings in Qdrant
+def recreate_collection(collection_prefix, model_name, vector_size):
+    collection_name = f"{collection_prefix}-{model_name}"
+
+    client.recreate_collection(
+        collection_name=collection_name,
+        vectors_config=VectorParams(size=vector_size, distance=Distance.COSINE)
+    )
+
+def store_embeddings_in_qdrant_v2(collection_prefix, model_name, embeddings, chunks):
+    collection_name = f"{collection_prefix}-{model_name}"
+    
+    points = [
+        {"id": str(uuid.UUID(hashlib.sha256(chunks[idx].encode('utf-8')).hexdigest()[:32])),
+          "vector": vector, "payload": {"text": chunks[idx]}}
+        for idx, vector in enumerate(embeddings) if vector is not None
+    ]
+    client.upsert(collection_name=collection_name, points=points)
+    print(f"Embeddings stored in collection: {collection_name}")
+
+
+
+def visualize_embeddings(client, collection_name):
+    print(collection_name)
+    all_points = []
+    limit = 544  # Adjust based on expected collection size
+    offset = 0
+
+    while True:
+        response = client.scroll(
+            collection_name=collection_name,
+            with_vectors=True,
+            limit=limit,
+            offset=offset
+        )
+        points, _ = response
+        if not points:
+            break
+
+        print(len(all_points))
+        all_points.extend(points)
+        offset += len(points)  # Increment offset for the next batch
+        break
+
+    if not all_points:
+        print(f"No points found in collection: {collection_name}")
+        return
+
+    # Extract vectors from the fetched points
+    vectors = np.array([point.vector for point in all_points if point.vector is not None])
+    if vectors.size == 0:
+        print("No valid vectors to visualize.")
+        return
+
+    # Reduce dimensions for visualization
+    reduced_vectors = PCA(n_components=2).fit_transform(vectors)
+    plt.scatter(reduced_vectors[:, 0], reduced_vectors[:, 1], alpha=0.5)
+    plt.title(f"Visualization of Embeddings ({collection_name})")
+    plt.show()
+
+
+def recreate_collections():
+    recreate_collection("test", "text-embedding-ada-002", 1536)
+    recreate_collection("test", "text-embedding-3-large", 3072)
+    recreate_collection("test", "mini_lm_l12_v2", 384)
+    recreate_collection("test", "bge_multilingual_gemma2", 3584)
+
+def extract_text_in_chunks(pdf_path):
+    raw_text = extract_text_from_pdf(pdf_path)
+    chunks = chunk_text(raw_text)
+    return chunks
+
+def get_nb_tokens(chunks, model_name):
+    tokenizer = tiktoken.get_encoding(model_name)
+    nb_token=0
+    for chunk in chunks:
+        num_tokens = len(tokenizer.encode(chunk))
+        nb_token+=num_tokens
+    return f"Number of tokens: {nb_token}"
+    
+def get_nb_tokens_v2(chunks, model_name):
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    nb_token=0
+    for chunk in chunks:
+        tokens = tokenizer.tokenize(chunk)
+        token_count = len(tokens)
+        nb_token+=token_count
+    return f"Number of tokens: {nb_token}"
+
+def retrieve_text_documents(qdrant_client,points,collection_name):
+    retrieved_documents = []
+    for result in points:
+        document = qdrant_client.retrieve(
+            collection_name=collection_name,
+            ids=[result.id]  # Fetch document(s) by ID
+        )
+        retrieved_documents.append({
+            'id': result.id,
+            'score': result.score,
+            'content': document[0].payload # Adjust key as needed
+        })
+
+    return retrieved_documents
+
+def retrieve_qa_documents(qdrant_client, collection_name: str, prompt,model_name, api_key):
+    client = OpenAI(api_key=api_key)
+    response = client.embeddings.create(
+        input=prompt,
+        model=model_name
+    )
+    embeddings=response.data[0].embedding
+
+    # Perform a vector search in the Qdrant collection
+    search_results = qdrant_client.search(
+        collection_name=collection_name,
+        query_vector=embeddings,  # Wrap the vector in NamedVector
+        limit=3  # Number of top results to retrieve
+    )
+
+    # Extract the results in a human-readable format
+    retrieved_documents = retrieve_text_documents(qdrant_client,search_results,collection_name)
+
+    return retrieved_documents
+
+def retrieve_qa_documents_v2(qdrant_client, collection_name: str, prompt,model_name, api_token,product_id):
+    url = f"https://api.infomaniak.com/1/ai/{product_id}/openai/v1/embeddings"
+    headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/json"}
+    data = '{"input": ["'+prompt+'"],"model": "'+model_name+'"}'
+
+    response = requests.post(url, headers=headers, data=data)
+    if response.status_code == 200:
+        res_json = response.json()
+        embeddings=res_json["data"][0]["embedding"]
+
+        # Perform a vector search in the Qdrant collection
+        search_results = qdrant_client.search(
+            collection_name=collection_name,
+            query_vector=embeddings,  # Wrap the vector in NamedVector
+            limit=3  # Number of top results to retrieve
+        )
+
+        # Extract the results in a human-readable format
+        retrieved_documents = retrieve_text_documents(qdrant_client,search_results,collection_name)
+
+        return retrieved_documents
+    return None
+
+def call_llm(prompt, documents, model, openai_api_key):
+    document_texts = "\n".join([doc['content']['text'] for doc in documents])
+
+    constructed_prompt = f"CONTENT:\n{document_texts}\n\nUSER PROMPT:\n{prompt}"
+
+    client = OpenAI(
+        api_key=openai_api_key,  # This is the default and can be omitted
+    )
+
+    response = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": constructed_prompt,
+            }
+        ],
+        model=model,
+    )
+
+    return response.choices[0].message.content
+
+def call_llm_v2(prompt, documents, model, product_id, api_key):
+    document_texts = "\n".join([doc['content']['text'] for doc in documents])
+    constructed_prompt = f"CONTENT:\n{document_texts}\n\nUSER PROMPT:\n{prompt}\n\nbased on only the content given by the user, create an answer for the prompt"
+
+    URL = f"https://api.infomaniak.com/1/ai/{product_id}/openai/chat/completions"
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+
+    data = {
+        "messages": [
+            {
+                "content": constructed_prompt,
+                "role": "user"
+            }
+        ],
+        "model": model
+    }
+    
+    # Convert dictionary to JSON string
+    json_data = json.dumps(data)
+
+
+    req = requests.request("POST", url = URL , data = json_data, headers = headers)
+    res = req.json()
+
+    return res["choices"][0]["message"]["content"]
+```

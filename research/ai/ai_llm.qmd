@@ -1,0 +1,205 @@
+---
+title: LLMs
+description: Documentation about the research done on LLMs using gemma2 for embeddings. Testing answers, pricing, and other factors of gpt-4o, gpt-4o-mini, mixtral8x22b, mixtral, llama3
+date: '2024-12-11'
+toc: true
+categories:
+ - AI
+ - AI integration
+format:
+  html:
+    code-fold: true
+image: ../../resources/images/mistralVSopenai.png
+---
+```{python}
+#| eval: false
+#| code-summary: "Set API keys"
+
+pdf_files = glob(os.path.join("data", "*.pdf"))
+client = qdrant_client.QdrantClient("qdrant_host:qdrant_port")
+openai_api_key = "openai_api_key"
+infomaniak_api_key = "infomaniak_api_key"
+infomaniak_product_id = "infomaniak_product_id"
+```
+
+{{< include ../../resources/scripts/_functions.qmd >}}
+
+## Answers comparison
+
+Since the highest average score in the previous test was for the question about Shakespeare and the Titanic, we will use this question and the documents retrieved with bge_multilingual_gemma2 to test some LLM models to generate answers. This question is also useful to test both creativity and the incorporation of factual data from the QA retrieval system at the same time.
+
+2. gpt-4o (same as gpt-4o-2024-08-06 at the time of testing)
+1. gpt-4o-mini (same as gpt-4o-mini-2024-07-18 at the time of testing)
+3. Mixtral 8x7B (deployed in infomaniak's servers)
+4. Mixtral 8x22B (deployed in infomaniak's servers)
+5. Llama 3.3 (deployed in infomaniak's servers)
+
+```{python}
+#| eval: false
+#| code-summary: "Get final answer"
+
+prompt="If Shakespeare had written about the Titanic tragedy, how might he have described the events and their emotional impact?"
+
+documents=retrieve_qa_documents_v2(client,"test-bge_multilingual_gemma2",prompt,"bge_multilingual_gemma2",infomaniak_api_key,infomaniak_product_id)
+print(call_llm(prompt,documents,"gpt-4o", openai_api_key))
+print(call_llm(prompt,documents,"gpt-4o-mini", openai_api_key))
+print(call_llm_v2(prompt,documents,"mixtral8x22b", infomaniak_product_id, infomaniak_api_key))
+print(call_llm_v2(prompt,documents,"mixtral", infomaniak_product_id, infomaniak_api_key))
+print(call_llm_v2(prompt,documents,"llama3", infomaniak_product_id, infomaniak_api_key))
+```
+
+### gpt4o
+Amidst the vast and uncharted seas, a vessel grand and fated, named Titanic, did set forth upon its maiden journey—a floating palace draped in illusions of invincibility. Yet, beneath the cloak of iron and opulence lay a tragic flaw, akin to the hubris of Ancient Greece, where overconfidence beguiles reason.
+
+Lo, in the midnight hour, disaster struck with an icy specter lurking, a colossal iceberg—Nature’s vengeful monolith—did pierce the ship’s formidable armor. The heavens themselves wept as the ship of dreams descended into the abyss, marking the timely end of human ambition's most glorious folly.
+
+Oh, the despair! As lifeboats, scant though they were, bore witness to the frailty of man’s preparation. They departed their creator at nary half their fill, leaving souls adrift in a sea of agony, tokens of privilege and oversight. The survivors’ souls cried out to the indifferent skies, their lament mingled with the cries of the lost, an anguished chorus of disunion.
+
+And what of the unseeing seers, the nearby vessels who misconstrued Titan’s flaming cries for help, their chance to intervene, alas, drowned by the night? Like specters of a tragic chorus, they did bear witness too late to the unraveling of human pretense.
+
+See how the heroism of Carpathia hastens to salvage what fate had not claimed, an ark of hope amidst the wreckage. With trembling hands and hearts entwined with grief, it did embrace the forsaken, delivering them to safer shores yet forever scarred.
+
+The morn reveals the sobering truth by which empires are humbled—the once-glorious Titanic lies beneath the waves, an eerie testament to the echoes of human imperfection. In the tragedy’s wake, we, from the comfort of retrospection, glean poignant lessons from dreams undone. Thus, Time’s relentless march continues, quietly etching memories upon the pages of history.
+
+### gpt4omini
+Had Shakespeare turned his quill to the tragic tale of the Titanic, he might have woven a haunting sonnet that captures the fleeting nature of hubris and the depths of despair faced by its fateful passengers. 
+
+In the manner of his rich, poetic imagery, the Bard would likely have depicted the great vessel, a "Titan of the seas," sailing with unmatched pride, its "watertight compartments" singing songs of invulnerability, yet carrying within its heart a "fateful flaw." The tragic irony of its boastful promise of safety could echo through the verses, lamenting, "What dream dost thou pursue, o wondrous ship, / Magnet for the hearts of men, who cling to hope?"
+
+As the night wore on, the fateful collision with icy fate would be rendered as a scene drenched in ominous foreboding. He might craft characters reflecting the souls aboard—“fearful hearts embracing darkness”—their screams lost amidst the stark cries of the sea. The lifeboats, "filled but a meager sixty percent," would symbolize the shallow salvation that life offers in dire moments, a poignant reminder of fractured destinies and lives cast adrift.
+
+The arrival of the RMS Carpathia could be woven into a narrative of bittersweet rescue—a “beacon amidst the darkened waves”—yet the toll of tragedy would ring clear: “O, list ye! One thousand five hundred souls swept away, / The ocean claims what pride did not foretell.” 
+
+Shakespeare would delve into the emotional turmoil of those left behind and those who survived. The narrative would resonate with the haunting echoes of lost voices—“Lost! Lost! How can we name the pain of emptiness?”—capturing the essence of grief, confusion, and the harsh light of truth that follows calamity.
+
+He might conclude with a poignant reflection on the very nature of existence, love, and mortality, encapsulating the tragedy's enduring legacy: “What vanity doth tread upon the waves, / When even Titans fall, and man is but a moment's breath?” In this way, the Bard would remind us of our shared humanity, forever linked to the tales of both triumph and tragedy upon the merciless seas.
+
+### mixtral8x22b
+In the tempest of the Atlantic, a marvel of man's creation, the Titanic, met its tragic fate. The vessel, deemed unsinkable, bore the weight of human pride and ambition, yet succumbed to the wrath of nature's icy grasp.
+
+The ship's distress calls echoed through the night, like desperate cries from a drowning heart, seeking solace in the vast emptiness of the sea. Yet, the cruel hand of fate played its part, as vessels nearby, though alerted, remained distant spectators to the unfolding tragedy.
+
+The Californian, the last to share communion with the Titanic, stood witness to her final symphony of distress flares, yet failed to lend a helping hand. The Carpathia, responding to the Titanic's earlier pleas, arrived too late to prevent the inevitable.
+
+As the Titanic sank, its lifeboats, symbols of hope, were left half-filled, mirroring the incomplete dreams of those aboard. The fortunate few, 706 souls, were granted passage to New York, the Titanic's intended haven, while 1,517 others were swallowed by the merciless sea.
+
+In the aftermath, the Carpathia, a messenger of sorrow, traversed the treacherous waters to deliver the grim news. The world mourned, their hearts heavy with the weight of loss, as they grappled with the reality of the tragedy.
+
+Had Shakespeare penned this tale, he would have painted a picture of human resilience amidst despair, of hope clinging onto the edge of desperation. He would have captured the essence of the tragedy, the collective sigh of a world confronted with its own mortality. The sinking of the Titanic would have been more than just a maritime disaster; it would have been a poignant reminder of the fragility of human endeavour in the face of nature's indifference.
+
+### mixtral
+Shakespeare, with his eloquent and dramatic style, might have described the Titanic tragedy as follows:
+
+"In the darkest hour of the night, a star of hope was extinguished, and the unsinkable colossus, Titanic, met her watery grave. A ship of dreams, filled with lives and stories, was swallowed by the abyss, leaving naught but whispers of its grandeur.
+
+The fateful night, a dance of shadows and light, played host to the collision of man's arrogance and nature's wrath. The mighty Titanic, a testament to human ingenuity, was brought low by an iceberg, a silent sentinel of the deep.
+
+The ship's final moments were a symphony of chaos and despair. Lifeboats, barely filled, were cast into the churning sea, while those left behind faced the cold embrace of the Atlantic. The cries of the lost echoed through the night, a mournful serenade to the heavens.
+
+Yet, amidst the tragedy, stories of courage and resilience emerged. The brave souls who rowed through the darkness, the officers who gave their places on the lifeboats, and the crew who tended to the passengers until the end. These are the tales that will live on, a beacon of hope in the face of despair.
+
+In the aftermath, the world stood still, stunned by the magnitude of the disaster. The once proud Titanic, now a memory, served as a stark reminder of the fragility of life and the limits of human ambition.
+
+So, let us remember the Titanic, not for her tragic end, but for the lives she carried, the dreams she held, and the lessons she taught. For in her watery grave, she left behind a legacy that will forever be etched in the annals of history."
+
+### llama3
+If Shakespeare had written about the Titanic tragedy, he might have described the events in a dramatic and poetic manner, emphasizing the human emotions and tragic flaws that led to the disaster. He could have portrayed the Titanic as a mighty and proud vessel, deemed "unsinkable" by its creators, but ultimately brought down by hubris and the unforgiving power of nature.
+
+The collision with the iceberg might have been described as a catastrophic event, akin to a Greek tragedy, where the gods themselves seemed to conspire against the ship. The distress calls and responses from nearby vessels could have been depicted as a chorus of desperation and frustration, highlighting the tragic delay in rescue efforts.
+
+Shakespeare might have also explored the emotional toll on the passengers and crew, particularly those who were left stranded on the sinking ship, awaiting their fate. The scenes of chaos, panic, and despair as the reality of the situation set in could have been vividly described, with characters lamenting their impending doom and the loss of loved ones.
+
+The role of the SS Californian, which failed to respond to the Titanic's distress calls, might have been portrayed as a symbol of human indifference and neglect, underscoring the theme of tragic responsibility. The eventual arrival of the RMS Carpathia, which rescued the survivors, could have been seen as a beacon of hope and redemption, highlighting the resilience of the human spirit in the face of adversity.
+
+Throughout the narrative, Shakespeare would likely have woven a complex tapestry of emotions, from the euphoria of the ship's maiden voyage to the crushing despair of its tragic end. The Titanic's story would have been transformed into a timeless tale of human folly, tragedy, and the enduring power of the human heart.
+
+### Conclusion
+
+As done for the answers in the last chapter, claude.ai was used to rate the answers given by the different LLMs, given emphasis to two points: that the question was properly answered and the content available in the prompt was used for the answer.
+
+1. gpt4o: 5/10
+    - While beautifully written in Shakespearean style, it includes many details not presented in the source material. The metaphors and imagery, while poetic, stray far from the factual content provided. Only accurately references the lifeboats being 60% filled and Carpathia's rescue.
+2. gpt4omini: 3/10
+    - Takes significant creative liberties with minimal connection to the source text. While capturing Shakespeare's style well, it invents details about "watertight compartments" and other elements not mentioned. The emotional elements are mostly fabricated rather than drawn from the provided content.
+3. mixtral8x22b: 8/10
+    - Stays closely tied to the source material while adopting a dramatic style. Accurately references key facts: Californian's failure to assist, Carpathia's rescue, the specific numbers (706 survivors, 1,517 deaths). Successfully balances dramatic interpretation with factual content.
+4. mixtral: 4/10
+    - While capturing a dramatic tone, it largely invents scenarios not presented in the source. Makes unfounded claims about "officers who gave their places" and other dramatic elements. Very little connection to the specific details provided in the source material.
+5. llama3: 7/10
+    - Generally, adheres to the source material while adopting a theatrical style. Accurately references the Californian's failure to respond and Carpathia's rescue. Could have incorporated more specific details from the source but maintains factual accuracy.
+
+## Pricing
+For the LLM usage two different prices are taken into account: input tokens and output tokens.
+During the previous test here are the different tokens used:
+
+```{python}
+#| echo: false
+usd_price=0.92
+
+gpt4o_input=1083
+gpt4o_output=407
+gpt4o_input_price=2.50 
+gpt4o_output_price=10.00
+gpt4o_total_price=(gpt4o_input*gpt4o_input_price)/1000000+(gpt4o_output*gpt4o_output_price)/1000000
+
+gpt4omini_input=1083
+gpt4omini_output=448
+gpt4omini_input_price=0.150 
+gpt4omini_output_price=0.600
+gpt4omini_total_price=(gpt4omini_input*gpt4omini_input_price)/1000000+(gpt4omini_output*gpt4omini_output_price)/1000000
+
+mixtral8x22b_input=1282
+mixtral8x22b_output=434
+mixtral8x22b_input_price=0.01
+mixtral8x22b_output_price=0.03
+mixtral8x22b_total_price=(mixtral8x22b_input*mixtral8x22b_input_price)/10000+(mixtral8x22b_output*mixtral8x22b_output_price)/10000
+
+mixtral_input=1283
+mixtral_output=415
+mixtral_input_price=0.005
+mixtral_output_price=0.015
+mixtral_total_price=(mixtral_input*mixtral_input_price)/10000+(mixtral_output*mixtral_output_price)/10000
+
+llama3_input=1067
+llama3_output=346
+llama3_input_price=0.01
+llama3_output_price=0.03
+llama3_total_price=(llama3_input*llama3_input_price)/10000+(llama3_output*llama3_output_price)/10000
+```
+1. gpt4o
+    - input tokens: `{python} gpt4o_input`
+    - output tokens: `{python} gpt4o_output`
+    - request price: `{python} gpt4o_total_price`$ (~ CHF `{python} gpt4o_total_price*usd_price`)
+2. gpt4omini
+    - input tokens: `{python} gpt4omini_input`
+    - output tokens: `{python} gpt4omini_output`
+    - request price: `{python} gpt4omini_total_price`$ (~ CHF `{python} gpt4omini_total_price*usd_price`)
+3. mixtral8x22b
+    - input tokens: `{python} mixtral8x22b_input`
+    - output tokens: `{python} mixtral8x22b_output`
+    - request price: CHF `{python} mixtral8x22b_total_price`
+4. mixtral
+    - input tokens: `{python} mixtral_input`
+    - output tokens: `{python} mixtral_output`
+    - request price: CHF `{python} mixtral_total_price`
+5. llama3
+    - input tokens: `{python} llama3_input`
+    - output tokens: `{python} llama3_output`
+    - request price: CHF `{python} llama3_total_price`
+
+## Other considerations
+
+### Environmental aspect
+
+Microsoft Azure has made significant strides in environmental sustainability, aiming to achieve carbon neutrality by 2012 and 100% renewable energy by 2025. They are also committed to being water positive by 2030 and achieving zero waste certification. Azure's data centres are designed with energy efficiency in mind, utilizing advanced cooling technologies and optimizing resource allocation. By choosing Azure, businesses can contribute to a greener future while benefiting from the advantages of cloud technology.
+
+Infomaniak positions itself as a more environmentally conscious cloud provider, with a stronger focus on sustainability and renewable energy. Their data centres are located in Switzerland, known for its strict environmental regulations, and they actively promote the use of renewable energy sources. Infomaniak emphasizes transparency about their environmental impact and offsets emissions by 200%. While they acknowledge the significant environmental impact of server manufacturing, their overall approach and commitment to sustainability make them a compelling choice for businesses seeking an environmentally friendly cloud solution.
+
+### Data sovereignty
+
+Hosting with Infomaniak ensures your data remains within Switzerland, adhering to Swiss data protection laws. Swiss law provides strong data protection guarantees, reducing exposure to extra-territorial laws like the USA PATRIOT Act. This contrasts with using OpenAI's models, which are hosted on U.S.-based infrastructure and subject to U.S. jurisdiction, including compliance with laws such as the PATRIOT Act and FISA.
+
+In comparison, deploying Mistral AI, an open-source LLM created by a French company, on Infomaniak's infrastructure offers a privacy-centric alternative. Mistral operates under European regulations, ensuring compliance with GDPR, and when hosted on Infomaniak, benefits from Swiss data protection laws. This setup minimizes risks associated with foreign data access requests and enhances control over data processing and storage.
+
+Choosing OpenAI provides access to cutting-edge proprietary models but comes with potential legal complexities tied to U.S. data access laws. Meanwhile, hosting Mistral AI on Infomaniak offers greater sovereignty, transparency, and compliance, fostering trust and security for both your users and your business.
+
