@@ -1,0 +1,27 @@
+project:
+  type: website
+  
+execute:
+  freeze: auto
+
+format:
+  html:
+    code-copy: true
+    css:
+    - resources/styles/styles.css
+    encoding: utf-8
+    theme: cosmo
+    margin-right: 0px
+
+website:
+  favicon: resources/images/favicon.ico
+  navbar:
+    right:
+      - text: "Home"
+        href: https://www.joaosilva.ch
+      - text: "Research"
+        href: "/"
+      - text: "Contact"
+        href: https://www.joaosilva.ch/contact
+    # logo: resources/images/favicon.ico
+  page-footer: <script>if (!document.querySelector('.quarto-listing')) {document.querySelector('#quarto-content').style.background = 'white';}</script>

@@ -1,0 +1,11 @@
+---
+title: "Recipes"
+listing:
+  contents: recipes
+  sort: "date desc"
+  type: grid
+  categories: true
+  sort-ui: false
+  filter-ui: false
+page-layout: full
+---

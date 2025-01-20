@@ -1,0 +1,14 @@
+---
+tilte: "Research"
+listing:
+  contents: 
+    - "research/ai_*.qmd"
+    - "research/menu_*.qmd"
+    - "research/javascript/*.qmd"
+  sort: "date asc"
+  type: grid
+  categories: true
+  sort-ui: false
+  exclude:
+    hidden: true
+---

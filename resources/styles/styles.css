@@ -1,0 +1,117 @@
+body{
+    background:#2c6a67
+}
+#quarto-sidebar{
+    background:#ffe1c5
+}
+#quarto-content{
+    padding-top:70px
+}
+.navbar-logo {
+max-height: 40px;
+}
+.navbar{
+    padding:18.25px;
+    background:#2c6a67;
+    height:65.5px;
+    position: absolute;
+    top: 0;
+    width: 100vw;
+}
+.menu-text{
+    color: #ecb29f;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: font-size .2s;
+}
+.menu-text:hover{
+    font-size: 1.5rem;
+}
+.nav-link[href="/"] .menu-text , .nav-link[href*="localhost"] .menu-text {
+    border-bottom: 2px solid #ecb29f;
+    font-weight: 700;
+    transition: font-weight .2s;
+}
+.navbar-nav{
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-right: 2rem;
+}
+
+.navbar-container, .aa-DetachedSearchButton{
+    padding:0
+}
+.aa-Autocomplete{
+    width: 30px !important
+}
+.navbar-expand-lg .navbar-nav .nav-link {
+    padding:0
+}
+.navbar #quarto-search.type-overlay .aa-Autocomplete svg.aa-SubmitIcon {
+    color:#ecb29f
+}
+#quarto-margin-sidebar{
+    color: #ecb29f;
+}
+
+
+.quarto-grid-item{
+    background: #ffdca6;
+    border-radius: 25px;
+}
+.thumbnail-image{
+    border-radius: 25px 25px 0 0;
+}
+
+
+
+
+
+
+.list.quarto-listing-default div{
+    display: flex;
+    flex-direction: row;
+}
+div.quarto-post .thumbnail{
+    display: flex;
+    align-items: end;
+    justify-content: end;
+}
+.list.quarto-listing-default div.body{
+    flex-direction: column;
+}
+.content-list{
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+    margin: 34px 0 17px;
+}
+.content-list h2{
+    border-bottom: none;
+    margin: 0;
+}
+.content-list button, .content-list img{
+    margin: 0 0 10px;
+    height:31px
+}
+.content-list img{
+    margin-left: 10px;
+    height:25px
+}
+
+.prompt p, .prompt ol{
+    width: 80%;
+    margin: 0 auto;
+}
+.prompt::before, .prompt::after{
+    content:"\"";
+    font-size: xxx-large;
+    font-family: cursive;
+}
+
+.prompt::after{
+    margin-left:90%;
+    display: inline-block;
+    transform: rotateY(180deg);
+}
