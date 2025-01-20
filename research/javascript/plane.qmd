@@ -1,0 +1,12 @@
+---
+title: "3D Plane"
+page-layout: full
+image: ../../resources/images/plane.png
+---
+<div id="canvas" style="position: absolute;left: 0;top: 0;background-color:#5ca0f2;background: linear-gradient(to bottom, #4a4969 0%,#7072ab 50%,#cd82a0 100%);"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+<script src="plane/cloud.js"></script>
+<script src="plane/sky.js"></script>
+<script src="plane/plane.js"></script>
+<script src="plane/sea.js"></script>
+<script src="plane/main.js"></script>
